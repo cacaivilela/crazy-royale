@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Crazy Royale 🎉</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Tela de menu / seleção -->
+    <div id="menu" class="screen">
+      <div class="menu-bg"></div>
+      <header class="title">
+        <h1>CRAZY <span>ROYALE</span></h1>
+        <p class="subtitle">O battle royale de paintball 3D mais maluco do multiverso! 🎨</p>
+        <button id="open-highlights" class="ghost-btn">📺 Melhores Momentos</button>
+        <button id="open-achievements" class="ghost-btn">🏆 Conquistas</button>
+        <button id="open-settings" class="ghost-btn">⚙️ Configurações</button>
+      </header>
+
+      <div class="mode-select">
+        <button class="mode-btn active" data-mode="br">🏆 Battle Royale</button>
+        <button class="mode-btn" data-mode="boss">🐍 Modo Boss (co-op)</button>
+        <button class="mode-btn" data-mode="build">🛠️ Crazy Build</button>
+        <button class="mode-btn" data-mode="infinite">♾️ Batalha Infinita</button>
+      </div>
+
+      <div class="selection">
+        <section class="picker">
+          <h2>Escolha seu personagem <small id="char-count"></small></h2>
+          <div id="char-grid" class="grid"></div>
+        </section>
+        <section class="picker">
+          <h2>Escolha sua arma <small id="weapon-count"></small></h2>
+          <div id="weapon-grid" class="grid"></div>
+        </section>
+        <section class="picker">
+          <h2>Escolha seu tanque de tinta <small id="tank-count"></small></h2>
+          <div id="tank-grid" class="grid"></div>
+        </section>
+        <section class="picker">
+          <h2>Escolha seu tênis <small id="sneaker-count"></small></h2>
+          <div id="sneaker-grid" class="grid"></div>
+        </section>
+        <section class="picker">
+          <h2>Escolha seu colete <small id="vest-count"></small></h2>
+          <div id="vest-grid" class="grid"></div>
+        </section>
+        <section class="picker">
+          <h2>Escolha a cor da tinta <small id="paint-count"></small></h2>
+          <div id="paint-grid" class="grid"></div>
+        </section>
+      </div>
+
+      <div class="loadout">
+        <div class="loadout-card">
+          <span class="label">PERSONAGEM</span>
+          <strong id="sel-char-name">—</strong>
+          <em id="sel-char-perk"></em>
+        </div>
+        <div class="loadout-card">
+          <span class="label">MARCADOR</span>
+          <strong id="sel-weapon-name">—</strong>
+          <em id="sel-weapon-stats"></em>
+        </div>
+        <div class="loadout-card">
+          <span class="label">TANQUE</span>
+          <strong id="sel-tank-name">—</strong>
+          <em id="sel-tank-stats"></em>
+        </div>
+        <div class="loadout-card">
+          <span class="label">TÊNIS</span>
+          <strong id="sel-sneaker-name">—</strong>
+          <em id="sel-sneaker-stats"></em>
+        </div>
+        <div class="loadout-card">
+          <span class="label">COLETE</span>
+          <strong id="sel-vest-name">—</strong>
+          <em id="sel-vest-stats"></em>
+        </div>
+        <div class="loadout-card">
+          <span class="label">COR DA TINTA</span>
+          <strong id="sel-paint-name">—</strong>
+          <em id="sel-paint-stats"></em>
+        </div>
+        <button id="start-btn" disabled>SALTAR! 🪂</button>
+      </div>
+
+      <div class="presets">
+        <button id="save-loadout" class="ghost-btn">💾 Salvar combinação</button>
+        <div id="preset-list"></div>
+      </div>
+    </div>
+
+    <!-- HUD do jogo -->
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div class="alive-counter">🧍 AINDA EM JOGO: <span id="alive-count">100</span></div>
+        <div class="zone-timer">⛈️ ZONA: <span id="zone-timer">--</span></div>
+        <div class="kills-counter">🎨 TINTAS: <span id="kill-count">0</span></div>
+      </div>
+      <div class="crosshair">+</div>
+      <div id="combo-banner"></div>
+      <div id="buffs"></div>
+      <div id="boss-bar" class="hidden">
+        <span id="boss-name"></span>
+        <div class="boss-track"><div id="boss-fill"></div></div>
+      </div>
+      <div class="hud-bottom">
+        <div class="bars-wrap">
+          <div class="health-wrap">
+            <div class="health-bar"><div id="health-fill"></div></div>
+            <span id="health-text">100</span>
+          </div>
+        </div>
+        <div class="weapon-info">
+          <span id="hud-weapon-name">—</span>
+          <span id="ammo-text">∞</span>
+        </div>
+      </div>
+      <div id="hitmarker"></div>
+      <div id="kill-feed"></div>
+      <div id="train-msg"></div>
+      <div id="box-overlay"></div>
+      <div id="instructions">WASD mover · clique atirar · botão direito mirar · Espaço pular (andando = dash) · C agachar · G granada · R recarregar · E sair · M som</div>
+    </div>
+
+    <!-- HUD do Crazy Build (editor) -->
+    <div id="build-hud" class="hidden">
+      <div id="build-palette"></div>
+      <div id="build-tip">Clique: colocar · X: apagar · P: jogar/editar · WASD+mouse: mover</div>
+    </div>
+
+    <!-- Tela de fim -->
+    <div id="endscreen" class="screen hidden">
+      <div class="end-card">
+        <h1 id="end-title">VITÓRIA NO PAINTBALL! 🏆</h1>
+        <p id="end-sub"></p>
+        <div class="end-stats">
+          <div><span id="end-kills">0</span><small>TINTAS</small></div>
+          <div><span id="end-rank">#--</span><small>POSIÇÃO</small></div>
+        </div>
+        <button id="end-highlights" class="ghost-btn">📺 Ver Melhores Momentos</button>
+        <button id="restart-btn">JOGAR DE NOVO</button>
+      </div>
+    </div>
+
+    <!-- CRTV: TV de tubo pra rever os melhores momentos salvos -->
+    <div id="crt-tv" class="hidden">
+      <div class="crt-frame">
+        <div class="crt-screen">
+          <video id="crt-video" autoplay loop muted playsinline></video>
+          <div id="crt-empty" class="crt-empty">Nenhum momento salvo ainda!<br>Pinte uns adversários 🎨</div>
+          <div class="crt-scanlines"></div>
+          <div id="crt-caption" class="crt-caption"></div>
+        </div>
+        <div class="crt-controls">
+          <button id="crt-prev">◀</button>
+          <span id="crt-counter">0 / 0</span>
+          <button id="crt-next">▶</button>
+          <button id="crt-close">✖ Fechar</button>
+        </div>
+        <div class="crt-brand">📺 CRTV — Crazy Royale TV</div>
+      </div>
+    </div>
+
+    <!-- Toast de conquista -->
+    <div id="ach-toast"></div>
+
+    <!-- Configurações -->
+    <div id="settings-panel">
+      <div class="panel-card">
+        <h2>⚙️ Configurações</h2>
+        <div class="set-row"><span>🔥 Visão de Calor</span><button id="set-thermal" class="toggle">OFF</button></div>
+        <div class="set-row"><span>✨ Brilho (bloom)</span><button id="set-bloom" class="toggle">ON</button></div>
+        <div class="set-row"><span>📊 Mostrar FPS</span><button id="set-fps" class="toggle">OFF</button></div>
+        <button id="settings-close" class="ghost-btn">Fechar</button>
+      </div>
+    </div>
+
+    <!-- Painel de conquistas -->
+    <div id="ach-panel">
+      <div class="panel-card">
+        <h2>🏆 Conquistas</h2>
+        <div id="ach-list"></div>
+        <button id="ach-close" class="ghost-btn">Fechar</button>
+      </div>
+    </div>
+
+    <!-- Pergunta do treino (após 20 derrotas seguidas) -->
+    <div id="train-prompt">
+      <div class="panel-card">
+        <h2>🪖 Que tal um treino pra melhorar?</h2>
+        <p>Você perdeu 5 vezes seguidas! Bora um treininho: o básico e depois 7 fases com o <b>CAIXACETE</b> 📦.</p>
+        <div class="prompt-btns">
+          <button id="train-yes">Bora treinar! 🎓</button>
+          <button id="train-no" class="ghost-btn">Agora não</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
