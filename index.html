@@ -24,6 +24,7 @@
         <button id="open-highlights" class="ghost-btn">📺 Melhores Momentos</button>
         <button id="open-achievements" class="ghost-btn">🏆 Conquistas</button>
         <button id="open-settings" class="ghost-btn">⚙️ Configurações</button>
+        <button id="install-app" class="ghost-btn">📲 Instalar app</button>
       </header>
 
       <div class="mode-select">
@@ -207,9 +208,6 @@
       </div>
     </div>
   </div>
-  <!-- Botão de instalar o app (aparece só quando o navegador permite instalar) -->
-  <button id="install-app" type="button" hidden style="position:fixed;left:14px;bottom:14px;z-index:9999;font:bold 15px system-ui,sans-serif;color:#fff;background:#16a34a;border:none;border-radius:14px;padding:10px 16px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.3),0 0 18px rgba(22,163,74,.5)">⬇️ Instalar app</button>
-
   <script type="module" src="/src/main.js"></script>
   <script>
     // Registro do service worker (faz o jogo funcionar offline depois de instalado)
@@ -221,29 +219,62 @@
       });
     }
 
-    // Captura o evento de instalação e mostra o botão "Instalar app"
+    // Botão "Instalar app" no menu — sempre visível (some só se já estiver instalado)
     let deferredInstallPrompt = null;
     const installBtn = document.getElementById('install-app');
 
+    // Se já está rodando como app instalado, não precisa do botão
+    const jaInstalado = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    if (jaInstalado && installBtn) installBtn.hidden = true;
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
-      deferredInstallPrompt = e;
-      if (installBtn) installBtn.hidden = false;
+      deferredInstallPrompt = e; // guarda para o clique no botão
     });
+
+    // Mensagem rápida na tela (para quando o navegador não tem instalação automática)
+    function avisoInstalar(msg) {
+      let t = document.getElementById('install-toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'install-toast';
+        t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);'
+          + 'max-width:90%;background:#111827;color:#fff;padding:12px 18px;border-radius:12px;'
+          + 'font:14px system-ui,sans-serif;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.4);text-align:center';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.style.opacity = '0'; }, 6000);
+    }
 
     if (installBtn) {
       installBtn.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) return;
-        deferredInstallPrompt.prompt();
-        try { await deferredInstallPrompt.userChoice; } catch (err) {}
-        deferredInstallPrompt = null;
-        installBtn.hidden = true;
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          try { await deferredInstallPrompt.userChoice; } catch (err) {}
+          deferredInstallPrompt = null;
+          return;
+        }
+        // Sem prompt automático: explica como instalar manualmente
+        const ua = navigator.userAgent || '';
+        const iOS = /iPhone|iPad|iPod/.test(ua);
+        if (iOS) {
+          avisoInstalar('No iPhone: toque em Compartilhar ⬆️ e depois em "Adicionar à Tela de Início".');
+        } else if (jaInstalado) {
+          avisoInstalar('O app já está instalado! 🎉 Abra pelo ícone na sua tela.');
+        } else {
+          avisoInstalar('Para instalar: no computador clique no ícone de instalar na barra de endereço; no Android, menu ⋮ → "Instalar aplicativo".');
+        }
       });
     }
 
     window.addEventListener('appinstalled', () => {
       deferredInstallPrompt = null;
       if (installBtn) installBtn.hidden = true;
+      avisoInstalar('Crazy Royale instalado! 🎉');
     });
   </script>
 </body>
