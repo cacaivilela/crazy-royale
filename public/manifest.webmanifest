@@ -1,0 +1,20 @@
+{
+  "name": "Crazy Royale",
+  "short_name": "Crazy Royale",
+  "description": "O battle royale de paintball 3D mais maluco do multiverso!",
+  "lang": "pt-BR",
+  "start_url": "/crazy-royale/",
+  "scope": "/crazy-royale/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0d0518",
+  "theme_color": "#db2777",
+  "icons": [
+    {
+      "src": "/crazy-royale/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
